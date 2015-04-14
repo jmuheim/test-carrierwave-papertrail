@@ -16,8 +16,8 @@ RSpec.describe User, type: :model do
         user = create_and_update_user_with(:keeping_files_avatar)
 
         user.reload # Reload!
-        expect(user.name).to eq 'original-name'
-        expect(user.keeping_files_avatar.file.filename).to eq 'original-image.jpg'
+        expect(user.name).to eq 'original-name' # This normal string field is correctly reloaded
+        expect(user.keeping_files_avatar.file.filename).to eq 'original-image.jpg' # This upload field isn'! <<<FAILING LINE>>>!
       end
     end
 
