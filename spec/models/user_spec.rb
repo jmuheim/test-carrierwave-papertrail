@@ -2,16 +2,37 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   describe 'versioning', versioning: true do
-    it 'reloads the original file name for "avatar" on reload (after reify)' do
-      user = create_and_update_user_with(:avatar)
+    context 'reloading the model after reify' do
+      it 'sets "avatar" to the original value' do
+        user = create_and_update_user_with(:avatar)
 
-      expect(user.avatar.file.filename).to match /^image\.jpg$/
+        user.reload # Reload!
+        expect(user.avatar.file.filename).to eq 'image.jpg'
+      end
+
+      it 'sets "keeping_files_avatar" to the original value' do
+        pending 'See StackOverflow'
+        user = create_and_update_user_with(:keeping_files_avatar)
+
+        user.reload # Reload!
+        expect(user.keeping_files_avatar.file.filename).to eq 'image.jpg'
+      end
     end
 
-    it 'reloads the original file name for "keeping_files_avatar" on reload (after reify)' do
-      user = create_and_update_user_with(:keeping_files_avatar)
+    context 'querying the model from the database after reify' do
+      it 'sets "avatar" to the original value' do
+        user = create_and_update_user_with(:avatar)
 
-      expect(user.keeping_files_avatar.file.filename).to match /^image\.jpg$/
+        user = User.find user.id # Query db!
+        expect(user.avatar.file.filename).to eq 'image.jpg'
+      end
+
+      it 'sets "keeping_files_avatar" to the original value' do
+        user = create_and_update_user_with(:keeping_files_avatar)
+
+        user = User.find user.id # Query db!
+        expect(user.keeping_files_avatar.file.filename).to eq 'image.jpg'
+      end
     end
 
     # Helper
@@ -25,7 +46,6 @@ RSpec.describe User, type: :model do
 
       # Reify version with image.jpg and reload
       user.versions.last.reify.save!
-      user.reload
 
       user
     end
