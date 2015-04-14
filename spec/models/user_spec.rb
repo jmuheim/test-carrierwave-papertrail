@@ -7,6 +7,21 @@ RSpec.describe User, type: :model do
                            avatar: File.open(File.expand_path('spec/support/dummy_files/image.jpg'))
     end
 
+    it 'prevents overwriting original files with the same name' do
+      ['same', 'other'].each do |path|
+        @user.update_attributes! avatar: dummy_file("#{path}_image_same_name/image.jpg")
+        original = @user.versions.last.reify
+
+        current_file  = @user.avatar.file.file
+        original_file = original.avatar.file.file
+
+        expect(current_file).not_to eq original_file
+
+        expect(File.exists?(current_file)).to eq true
+        expect(File.exists?(original_file)).to eq true
+      end
+    end
+
     it 'restores the original file name on reify' do
       # Check for original values
       expect(@user.name).to eq 'donald'
@@ -27,15 +42,13 @@ RSpec.describe User, type: :model do
       expect(@user.name).to eq 'donald' # Passes
       expect(@user.avatar.file.filename).to eq 'image.jpg'
     end
-    #
-    # it 'reloads the original file name on reload after reify' do
-    #   @user = create :@user, :donald, :with_avatar
-    #
-    #   @user.update_attributes! avatar: dummy_file('other_image.jpg')
-    #   @user.versions.last.reify.save
-    #   @user.reload
-    #
-    #   expect(@user.avatar.file.filename).to match /-image\.jpg$/ # Fails: expected "1428993650-43424-5649-other_image.jpg" to match /-image\.jpg$/
-    # end
+
+    it 'reloads the original file name on reload after reify' do
+      @user.update_attributes! avatar: File.open(File.expand_path('spec/support/dummy_files/other_image.jpg'))
+      @user.versions.last.reify.save
+      @user.reload
+
+      expect(@user.avatar.file.filename).to eq 'image.jpg'
+    end
   end
 end
