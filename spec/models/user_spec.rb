@@ -12,7 +12,7 @@ RSpec.describe User, type: :model do
       end
 
       it 'sets "keeping_files_avatar" to the original value' do
-        pending 'See StackOverflow'
+        pending 'See http://stackoverflow.com/questions/29624223/papertrail-doesnt-play-nice-with-carrierwave-and-remove-previously-stored-file'
         user = create_and_update_user_with(:keeping_files_avatar)
 
         user.reload # Reload!
