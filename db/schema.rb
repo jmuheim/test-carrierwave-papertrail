@@ -16,8 +16,9 @@ ActiveRecord::Schema.define(version: 20150414081604) do
   create_table "users", force: :cascade do |t|
     t.string   "name"
     t.string   "avatar"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "keeping_files_avatar"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "versions", force: :cascade do |t|
